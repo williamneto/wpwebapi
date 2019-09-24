@@ -1,16 +1,11 @@
-"""
-Webapp flask que serve a API 
-
-autor: William Neto <william.g.neto@gmail.com>
-"""
 from flask_cors import CORS
 from flask import Flask, jsonify, request, send_from_directory
-from driver import WPWebAPI
+from driver import WPDriver
 
 app = Flask(__name__)
 CORS(app)
 
-wp_driver = WPWebAPI()
+wp_driver = WPDriver()
 
 @app.route("/start_login", methods=["GET", "POST"])
 def start_login():

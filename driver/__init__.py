@@ -12,7 +12,7 @@ HOST = "http://127.0.0.1:5000/"
 
 # Main class that handle the comunications with WhatsApp
 
-class WPWebAPI():
+class WPDriver():
 	def __init__(self):
 		self.drivers_storage = DriversStorage()
 	
