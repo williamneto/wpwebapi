@@ -36,22 +36,19 @@ class WPWebAPI:
 
         loaded = False
         i = 0
-        while loaded == False:
+        while not loaded:
             i += 1
             if i >= 4:
                 loaded = True
                 response["status"] = 0
             try:
+                response["status"] = 2
                 if not driver["obj"].get_status() == "LoggedIn":
                     b64 = driver["obj"].get_qr_base64()
                     loaded = True
 
                     response["qr_code"] = b64
                     response["status"] = 1
-
-                    loaded = True
-                else:
-                    response["status"] = 2
 
             except:
                 print("exception")
@@ -65,17 +62,15 @@ class WPWebAPI:
         driver = self.drivers_storage.get(user)
         response = {}
 
-        if driver == None:
-            response["status"] = 4
-        else:
+        response["status"] = 4
+        if driver is not None:
             loaded = False
-            while loaded == False:
 
+            while not loaded:
                 try:
+                    response["status"] = 3
                     if driver["obj"].get_status() == "LoggedIn":
                         response["status"] = 2
-                    else:
-                        response["status"] = 3
                     loaded = True
                     driver["obj"].save_firefox_profile()
                 except:
@@ -88,25 +83,27 @@ class WPWebAPI:
         driver = self.drivers_storage.get(user)
         response = {}
 
-        if driver == None:
-            response["status"] = 4
-        else:
+        response["status"] = 4
+        if driver is not None:
             retry = True
-            while retry == True:
+            while retry:
                 try:
                     contact_objs = driver["obj"].get_contacts()
                     retry = False
                 except:
                     continue
 
-            contacts = []
-            for obj in contact_objs:
+            def get_contact_with_image(contact):
                 contact = {"id": obj.id, "safe_name": obj.get_safe_name(), "img": None}
+
                 try:
                     contact["img"] = contact.profile_pic
                 except:
                     pass
-                contacts.append(contact)
+
+                return contact
+
+            contacts = list(map(get_contact_with_image, contact_objs))
 
             response["contacts"] = contacts
 
@@ -117,36 +114,34 @@ class WPWebAPI:
         driver = self.drivers_storage.get(user)
         response = {}
 
-        if driver == None:
-            response["status"] = 4
-            response["drivers"] = str(self.drivers_storage.drivers)
-        else:
+        response["status"] = 4
+        response["drivers"] = str(self.drivers_storage.drivers)
+        if driver is not None:
             retry = True
-            while retry == True:
+            while retry:
                 try:
                     chats_objs = driver["obj"].get_all_chats()
                     retry = False
                 except:
                     continue
-            chats = []
 
-            for c in chats_objs:
+            def get_chat_obj(chat):
+                name = driver["obj"].get_contact_from_id(c.id).get_safe_name()
+                unreads = driver["obj"].get_unread_messages_in_chat(
+                    c.id, include_me=True, include_notifications=True
+                )
+                unreads = len(unreads)
                 obj = {
                     "id": c.id,
-                    "name": driver["obj"].get_contact_from_id(c.id).get_safe_name(),
-                    "unreads": len(
-                        driver["obj"].get_unread_messages_in_chat(
-                            c.id, include_me=True, include_notifications=True
-                        )
-                    ),
+                    "name": name,
+                    "unreads": unreads,
                     "uri": "%schat/%s/?user=%s" % (HOST, c.id, driver["user"]),
-                    "is_group": False,
+                    "is_group": isinstance(c, GroupChat),
                 }
-                if isinstance(c, GroupChat):
-                    obj["is_group"] = True
 
-                chats.append(obj)
+                return obj
 
+            chats = list(map(get_chat_obj, chats_objs))
             response["chats"] = chats
             response["status"] = 0
 
