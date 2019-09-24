@@ -10,11 +10,11 @@ Whatsapp has a strong anti spam policiy wich ban numbers after signs of spam dis
 - [WebWhatsapp-Wrapper](https://github.com/mukulhase/WebWhatsapp-Wrapper)
 - [Flask](https://github.com/pallets/flask)
 
-Take atention on the installation of the WebWhatsappWrapper. It depends on Firefox and other packages like geckodriver to work properly.
+Take atention on the installation of WebWhatsappWrapper. It depends on Firefox and other packages like geckodriver to work properly.
 
 ## Getting started
 
-With flask and WebWhatsapp-Wrapper dependencies solved you wil be able to run de webapp with a simples
+With flask and WebWhatsapp-Wrapper dependencies solved you wil be able to run the webapp 
 
 `python3 webapi.py`
 
