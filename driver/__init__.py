@@ -124,17 +124,17 @@ class WPDriver:
                     continue
 
             def get_chat_obj(chat):
-                name = driver["obj"].get_contact_from_id(c.id).get_safe_name()
+                name = driver["obj"].get_contact_from_id(chat.id).get_safe_name()
                 unreads = driver["obj"].get_unread_messages_in_chat(
-                    c.id, include_me=True, include_notifications=True
+                    chat.id, include_me=True, include_notifications=True
                 )
                 unreads = len(unreads)
                 obj = {
-                    "id": c.id,
+                    "id": chat.id,
                     "name": name,
                     "unreads": unreads,
-                    "uri": "%schat/%s/?user=%s" % (HOST, c.id, driver["user"]),
-                    "is_group": isinstance(c, GroupChat),
+                    "uri": "%schat/%s/?user=%s" % (HOST, chat.id, driver["user"]),
+                    "is_group": isinstance(chat, GroupChat),
                 }
 
                 return obj
